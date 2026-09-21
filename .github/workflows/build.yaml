@@ -11,7 +11,7 @@ jobs:
           java-version: '17'
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.0'
+          flutter-version: '3.24.5'
       - run: |
           rm -rf android
           flutter create . --project-name zfanz_electronics --org com.zfanz --platforms android --no-pub
