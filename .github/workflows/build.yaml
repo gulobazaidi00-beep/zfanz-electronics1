@@ -13,14 +13,10 @@ jobs:
         with:
           flutter-version: '3.24.5'
       - run: |
-          echo "Saving your ZFANZ code..."
           cp -r lib /tmp/lib_real
           cp pubspec.yaml /tmp/pubspec_real.yaml
-          echo "Deleting broken android..."
           rm -rf android
-          echo "Creating new android with new Gradle..."
           flutter create --platforms=android --project-name zfanz_electronics --org com.zfanz.
-          echo "Restoring your ZFANZ code..."
           rm -rf lib
           cp -r /tmp/lib_real lib
           cp /tmp/pubspec_real.yaml pubspec.yaml
