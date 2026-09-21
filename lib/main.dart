@@ -1,92 +1,73 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-void main() => runApp(MaterialApp(home: Home(), debugShowCheckedModeBanner: false));
+void main() => runApp(ZfanzApp());
 
-class Home extends StatefulWidget {
-  @override
-  State<Home> createState() => _HomeState();
-}
-
-class _HomeState extends State<Home> {
-  List<String> ids = [];
-  bool loading = true;
-  final String handle = "@gulobazaidi-s7f";
-
-  @override
-  void initState() {
-    super.initState();
-    load();
-  }
-
-  Future<void> load() async {
-    try {
-      final r = await http.get(Uri.parse('https://www.youtube.com/$handle/videos'),
-          headers: {'User-Agent': 'Mozilla/5.0'});
-      final reg = RegExp(r'"videoId":"([a-zA-Z0-9_-]{11})"');
-      final list = reg.allMatches(r.body).map((m) => m.group(1)!).toSet().toList();
-      setState(() { ids = list; loading = false; });
-    } catch (e) {
-      setState(() => loading = false);
-    }
-  }
-
+class ZfanzApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("ZFANZ-ELECTRONICS"), backgroundColor: Colors.red, centerTitle: true),
-      body: loading? Center(child: CircularProgressIndicator()) :
-      ids.isEmpty? Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children:[Icon(Icons.video_library, size: 60), SizedBox(height:10), Text("No videos found\nCheck internet"), ElevatedButton(onPressed: load, child: Text("Retry"))])) :
-      GridView.builder(
-        padding: EdgeInsets.all(8),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 0.75),
-        itemCount: ids.length,
-        itemBuilder: (_, i) => GestureDetector(
-          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Player(videoId: ids[i]))),
-          child: Card(child: Column(children:[
-            Image.network('https://img.youtube.com/vi/${ids[i]}/hqdefault.jpg', height: 120, width: double.infinity, fit: BoxFit.cover),
-            Padding(padding: EdgeInsets.all(6), child: Text("Gulo Bazaidi Video ${i+1}", maxLines: 2)),
-            Icon(Icons.play_circle_fill, color: Colors.red, size: 30)
-          ])),
-        ),
-      ),
+    return MaterialApp(
+      title: 'ZFANZ-ELECTRONICS',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(primarySwatch: Colors.deepPurple, useMaterial3: true),
+      home: HomePage(),
     );
   }
 }
 
-class Player extends StatefulWidget {
-  final String videoId;
-  Player({required this.videoId});
+class HomePage extends StatefulWidget {
   @override
-  State<Player> createState() => _PlayerState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _PlayerState extends State<Player> {
-  late YoutubePlayerController c;
-  @override
-  void initState() {
-    super.initState();
-    c = YoutubePlayerController(initialVideoId: widget.videoId, flags: YoutubePlayerFlags(autoPlay: true));
+class _HomePageState extends State<HomePage> {
+  final List<Map<String,String>> products = [
+    {"name":"Phone Charging System","price":"UGX 25,000","video":"dQw4w9WgXcQ"},
+    {"name":"TV Repair Kit","price":"UGX 120,00","video":"dQw4w9WgXcQ"},
+    {"name":"Solar Power Inverter","price":"UGX 350,00","video":"dQw4w9WgXcQ"},
+    {"name":"Bluetooth Speaker","price":"UGX 65,00","video":"dQw4w9WgXcQ"},
+  ];
+
+  void orderWhatsApp(String product) async {
+    final phone = "256770980980"; // CHANGE to your number
+    final msg = "Hello ZFANZ, I want to order: $product";
+    final url = Uri.parse("https://wa.me/$phone?text=${Uri.encodeComponent(msg)}");
+    if (await canLaunchUrl(url)) await launchUrl(url, mode: LaunchMode.externalApplication);
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Playing")),
-      body: Column(children:[
-        YoutubePlayer(controller: c),
-        SizedBox(height:20),
-        Padding(padding: EdgeInsets.all(12), child: Text("Enjoy ${widget.videoId} from @gulobazaidi-s7f", style: TextStyle(fontWeight: FontWeight.bold))),
-        ElevatedButton.icon(
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-          icon: Icon(Icons.chat), label: Text("Get Full Drama - 200 UGX on WhatsApp"),
-          onPressed: () async {
-            final uri = Uri.parse("https://wa.me/256770980980?text=I want full video ${widget.videoId}");
-            if(await canLaunchUrl(uri)) await launchUrl(uri, mode: LaunchMode.externalApplication);
-          },
-        )
-      ]),
+      appBar: AppBar(title: Text("ZFANZ-ELECTRONICS"), centerTitle: true, backgroundColor: Colors.deepPurple[100]),
+      body: ListView.builder(
+        padding: EdgeInsets.all(12),
+        itemCount: products.length,
+        itemBuilder: (c,i){
+          final p = products[i];
+          final controller = YoutubePlayerController(initialVideoId: p["video"]!, flags: YoutubePlayerFlags(autoPlay: false));
+          return Card(
+            margin: EdgeInsets.only(bottom:16),
+            elevation: 4,
+            child: Padding(
+              padding: EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(p["name"]!, style: TextStyle(fontSize:18,fontWeight: FontWeight.bold)),
+                  SizedBox(height:4),
+                  Text(p["price"]!, style: TextStyle(color: Colors.green, fontSize:16)),
+                  SizedBox(height:8),
+                  YoutubePlayer(controller: controller, showVideoProgressIndicator: true),
+                  SizedBox(height:8),
+                  SizedBox(width: double.infinity, child: ElevatedButton.icon(icon: Icon(Icons.shopping_cart), label: Text("Order on WhatsApp"), onPressed: ()=> orderWhatsApp(p["name"]!))),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton.extended(onPressed: ()=> orderWhatsApp("General Inquiry"), label: Text("Contact"), icon: Icon(Icons.chat)),
     );
   }
 }
