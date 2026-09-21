@@ -12,8 +12,20 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.5'
-      - run: flutter pub get
-      - run: flutter build apk --release
+      - run: |
+          echo "Saving your ZFANZ code..."
+          cp -r lib /tmp/lib_real
+          cp pubspec.yaml /tmp/pubspec_real.yaml
+          echo "Deleting broken android..."
+          rm -rf android
+          echo "Creating new android with new Gradle..."
+          flutter create --platforms=android --project-name zfanz_electronics --org com.zfanz.
+          echo "Restoring your ZFANZ code..."
+          rm -rf lib
+          cp -r /tmp/lib_real lib
+          cp /tmp/pubspec_real.yaml pubspec.yaml
+          flutter pub get
+          flutter build apk --release
       - uses: actions/upload-artifact@v4
         with:
           name: ZFANZ-APK
