@@ -82,7 +82,7 @@ class _PlayerState extends State<Player> {
           style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
           icon: Icon(Icons.chat), label: Text("Get Full Drama - 200 UGX on WhatsApp"),
           onPressed: () async {
-            final uri = Uri.parse("https://wa.me/256700000000?text=I want full video ${widget.videoId}");
+            final uri = Uri.parse("https://wa.me/256770980980?text=I want full video ${widget.videoId}");
             if(await canLaunchUrl(uri)) await launchUrl(uri, mode: LaunchMode.externalApplication);
           },
         )
