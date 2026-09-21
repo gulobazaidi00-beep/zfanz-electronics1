@@ -1,18 +1,22 @@
 name: zfanz_electronics
-description: ZFANZ-ELECTRONICS - Gulo Bazaidi Official
+description: ZFANZ Electronics Store - Butebo
 publish_to: 'none'
 version: 1.0.0+1
+
 environment:
   sdk: ">=3.5.0 <4.0.0"
+
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.2
-  youtube_player_flutter: ^9.1.2
-  http: ^1.2.0
+  cupertino_icons: ^1.0.6
+  youtube_player_flutter: ^9.1.1
   url_launcher: ^6.2.5
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_lints: ^4.0.0
+
 flutter:
   uses-material-design: true
